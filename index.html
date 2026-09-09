@@ -82,19 +82,67 @@
         label { display: block; margin-bottom: 6px; }
 
         .section-title {
-            margin-top: 32px;
-            font-weight: 600;
-            font-size: 24px;
-            margin-bottom: 12px;
-            cursor: pointer;              /* klickbar */
+            margin-top: 22px;
+            margin-bottom: 10px;
+            padding: 12px 14px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: rgba(127,127,127,0.07);
+            cursor: pointer;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 10px;
+            user-select: none;
+        }
+
+        .section-title-copy {
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .section-title-main {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .step-badge {
+            width: 28px;
+            height: 28px;
+            flex: 0 0 28px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: #2563eb;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .section-summary {
+            padding-left: 38px;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.35;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .section-title:not(.collapsed) .section-summary {
+            display: none;
         }
 
         .section-title::after {
-            content: '▼';                 /* Pfeil */
-            font-size: 16px;
+            content: '▼';
+            flex: 0 0 auto;
+            font-size: 14px;
             color: var(--muted);
             transition: transform 0.2s ease;
         }
@@ -241,16 +289,7 @@
     height: auto;          /* Höhe proportional zur Breite */
     object-fit: contain;   /* falls du eine feste Höhe setzen würdest */
     border-radius: 8px;    /* optional, passt zum Card-Stil */
-    cursor: pointer;
-    transition: transform 0.15s ease, opacity 0.15s ease;
-}
-
-.header-image:hover {
-    opacity: 0.85;
-}
-
-.header-image:active {
-    transform: scale(0.97);
+    cursor: default;
 }
 
 .banding-box-header {
@@ -469,6 +508,140 @@ body.reference-image-open {
 
 
 
+
+/* ── Mobile Bedienführung ─────────────────────────────────────────────── */
+.app-title-row {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    margin-bottom: 12px;
+}
+.app-title-row h1 { margin: 0; padding: 0 46px; }
+.theme-button {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 42px;
+    height: 42px;
+    margin: 0;
+    padding: 0;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 19px;
+    background: rgba(127,127,127,0.12);
+}
+
+.start-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+.start-actions button { margin: 0; }
+.secondary-action {
+    background: rgba(127,127,127,0.12);
+}
+
+.saved-entries-wrapper {
+    display: none;
+    margin: 12px 0 18px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px;
+    background: rgba(127,127,127,0.05);
+}
+.saved-entries-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+.saved-entries-count { color: var(--muted); font-size: 12px; font-weight: 500; }
+.saved-search { margin-bottom: 10px; }
+.saved-entry-card {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 11px;
+    background: rgba(127,127,127,0.04);
+}
+.saved-entry-title { font-size: 15px; font-weight: 700; }
+.saved-entry-meta { margin-top: 4px; color: var(--muted); font-size: 12px; line-height: 1.45; }
+.saved-entry-actions { display: grid; grid-template-columns: 1fr auto; gap: 8px; margin-top: 10px; }
+.saved-entry-actions button { margin: 0; }
+.saved-entry-delete { width: 44px; padding: 0; font-size: 18px; }
+
+.dependent-option {
+    margin-left: 10px;
+    padding-left: 12px;
+    border-left: 2px solid rgba(37,99,235,0.45);
+}
+
+.evaluation-section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+.evaluation-count-hint { color: var(--muted); font-size: 13px; }
+.evaluation-tools { margin: 0 0 14px; }
+.evaluation-tools > summary {
+    list-style: none;
+    width: fit-content;
+    margin-left: auto;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 13px;
+    background: rgba(127,127,127,0.07);
+}
+.evaluation-tools > summary::-webkit-details-marker { display: none; }
+.evaluation-tools[open] > summary { margin-bottom: 10px; color: var(--text); }
+.evaluation-editor-toolbar { margin-bottom: 0; }
+.evaluation-reset-wrap { margin-top: 8px; padding-top: 14px; border-top: 1px solid var(--border); }
+.evaluation-reset-wrap .btn-red { margin: 0; }
+
+.form-actions {
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+}
+.autosave-status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 22px;
+    margin-bottom: 9px;
+    color: var(--muted);
+    font-size: 12px;
+    text-align: center;
+}
+.autosave-status.saved::before { content: '✓'; color: #22c55e; font-weight: 700; }
+.form-actions .btn-green { margin-bottom: 0; }
+
+@media (max-width: 600px) {
+    body { padding: 16px 10px 28px; }
+    .card { padding: 18px 14px; }
+    .header-image { max-width: 180px; margin-bottom: 10px; }
+    .section-title { margin-top: 18px; }
+    .banding-box { padding: 14px; margin-bottom: 16px; }
+    .banding-box-title { font-size: 18px; }
+}
+
+@media (max-width: 390px) {
+    .start-actions { grid-template-columns: 1fr; }
+    .section-summary { padding-left: 0; }
+}
+
 /* ── Bearbeitungsmodus Bildbewertung ─────────────────────────────────── */
 .evaluation-editor-toolbar {
     display: flex;
@@ -606,16 +779,38 @@ body.evaluation-editor-open { overflow: hidden; }
 <div class="card">
 
     <img
-      id="theme-toggle"
+      id="header-logo"
       class="header-image"
       alt="Abnahmeprotokoll Header"
       src="data:image/png;base64,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cG9zdXJlXCI6MTAwLFwiY29udHJhc3RcIjoxMDAsXCJzYXR1cmF0aW9uXCI6MTAwLFwiaHVlXCI6MTAwLFwid2JNb2RlXCI6LTEsXCJ3YlRlbXBlcmF0dXJlXCI6MTAwLFwidGludFwiOjEwMCxcInNoYWRvd1wiOjEwMCxcImhpZ2hsaWdodFwiOjEwMCxcImxpZ2h0YmFsYW5jZVwiOjEwMCxcInNoYXJwbmVzc1wiOjEwMCxcImRlZmluaXRpb25cIjoxMDB9IiwiZWZmZWN0VmFsdWUiOiJ7XCJmaWx0ZXJJbmRpY2F0aW9uXCI6NDA5NyxcImZpbHRlclR5cGVcIjowLFwiYWxwaGFWYWx1ZVwiOjEwMH0iLCJpc0JsZW5kaW5nIjp0cnVlLCJpc05vdFJlRWRpdCI6ZmFsc2UsInNlcFZlcnNpb24iOiIxNTAwMDAiLCJuZGVWZXJzaW9uIjoxLCJyZVNpemUiOjQsInJvdGF0aW9uIjoxLCJhZGp1c3RtZW50VmFsdWUiOiJ7XCJtQ3JvcFN0YXRlXCI6MTMxMDc2fSIsImlzQXBwbHlTaGFwZUNvcnJlY3Rpb24iOmZhbHNlLCJpc05ld1JlRWRpdE9ubHkiOmZhbHNlLCJpc0RlY29SZUVkaXRPbmx5IjpmYWxzZX0AAKELFgAAAE9yaWdpbmFsX1BhdGhfSGFzaF9LZXk3MmVjMjc0MjkzNGM2ZTNjOGNkNzQ0YTgzYTg3YzA2ZDI5MDEzMWZhOWIwMDNiYjRiZThiYTgxMmJkNjUxNTIwLzIwNDFTRUZIawAAAAIAAAAAAKELQQQAAN4DAAAAAKELYwAAAGMAAAAkAAAAU0VGVA==">
 
-<h1>Abnahmeprotokoll</h1>
+<div class="app-title-row">
+  <h1>Abnahmeprotokoll</h1>
+  <button type="button" id="theme-toggle" class="theme-button" aria-label="Darstellung wechseln" title="Hell/Dunkel wechseln">☾</button>
+</div>
 
 <form id="protokoll-form" autocomplete="off">
 
-<div class="section-title" id="section-allgemein-toggle">Allgemein</div>
+<div class="start-actions">
+  <button type="button" id="new-entry-button" class="secondary-action">Neue Abnahme</button>
+  <button type="button" id="load-toggle-button" class="btn-blue">Gespeicherte laden</button>
+</div>
+
+<div id="saved-entries-wrapper" class="saved-entries-wrapper">
+  <div class="saved-entries-head">
+    <span>Gespeicherte Abnahmen</span>
+    <span id="saved-entries-count" class="saved-entries-count"></span>
+  </div>
+  <input type="search" id="saved-entries-search" class="saved-search" placeholder="Seriennummer, Maschine, Prüfer …" autocomplete="off">
+  <div id="saved-entries-list" style="display:flex; flex-direction:column; gap:8px;"></div>
+</div>
+
+<div class="section-title" id="section-allgemein-toggle">
+  <div class="section-title-copy">
+    <div class="section-title-main"><span class="step-badge">1</span><span>Allgemein</span></div>
+    <div class="section-summary" id="section-allgemein-summary">Grunddaten</div>
+  </div>
+</div>
 <div id="section-allgemein-content">
   <label>Datum</label>
   <input type="date" id="protokoll-datum">
@@ -731,7 +926,12 @@ body.evaluation-editor-open { overflow: hidden; }
 
 </div>
 
-<div class="section-title" id="section-spez-toggle">Spezifikationen</div>
+<div class="section-title" id="section-spez-toggle">
+  <div class="section-title-copy">
+    <div class="section-title-main"><span class="step-badge">2</span><span>Spezifikationen</span></div>
+    <div class="section-summary" id="section-spez-summary">Maschinenkonfiguration</div>
+  </div>
+</div>
 <div id="section-spez-content">
 
   <label>Maschinentyp</label>
@@ -748,7 +948,7 @@ body.evaluation-editor-open { overflow: hidden; }
   </select>
 
   <!-- Corrugated -->
-  <div id="corrugated-wrapper" style="display:none;">
+  <div id="corrugated-wrapper" class="dependent-option" style="display:none;">
     <label>Corrugated</label>
     <select name="corrugated">
       <option value="">Bitte auswählen</option>
@@ -767,7 +967,7 @@ body.evaluation-editor-open { overflow: hidden; }
   </select>
 
   <!-- White / Varnish Aufteilung -->
-  <div id="white-split-wrapper" style="display:none;">
+  <div id="white-split-wrapper" class="dependent-option" style="display:none;">
     <label>White / Varnish Aufteilung</label>
     <select name="white_split">
       <option value="">Bitte auswählen</option>
@@ -777,7 +977,7 @@ body.evaluation-editor-open { overflow: hidden; }
   </div>
 
   <!-- Haptprint -->
-  <div id="haptprint-wrapper" style="display:none;">
+  <div id="haptprint-wrapper" class="dependent-option" style="display:none;">
     <label>Haptprint</label>
     <select name="haptprint">
       <option value="">Bitte auswählen</option>
@@ -787,7 +987,7 @@ body.evaluation-editor-open { overflow: hidden; }
   </div>
 
   <!-- LiquidLamination -->
-  <div id="liquidlam-wrapper" style="display:none;">
+  <div id="liquidlam-wrapper" class="dependent-option" style="display:none;">
     <label>LiquidLamination</label>
     <select name="liquidlamination">
       <option value="">Bitte auswählen</option>
@@ -808,41 +1008,45 @@ body.evaluation-editor-open { overflow: hidden; }
 
 </div>
 
-<div class="section-title" id="section-bild-toggle">Bildbenotung</div>
+<div class="section-title" id="section-bild-toggle">
+  <div class="section-title-copy">
+    <div class="section-title-main"><span class="step-badge">3</span><span>Bildbenotung</span></div>
+    <div class="section-summary" id="section-bild-summary">Relevante Prüfungen</div>
+  </div>
+</div>
 <div id="section-bild-content">
 
-<div class="evaluation-editor-toolbar">
-  <button type="button" id="evaluation-editor-toggle" class="btn-blue">Bearbeitungsmodus</button>
-  <div id="evaluation-editor-actions" class="evaluation-editor-actions" hidden>
-    <button type="button" id="evaluation-add-block" class="btn-green">+ Bewertungsbild</button>
-    <button type="button" id="evaluation-export-config">Konfiguration exportieren</button>
-    <button type="button" id="evaluation-import-config">Konfiguration importieren</button>
-    <button type="button" id="evaluation-restore-default" class="btn-red">Standard wiederherstellen</button>
-  </div>
-  <input type="file" id="evaluation-import-file" accept="application/json,.json" hidden>
+<div class="evaluation-section-head">
+  <div id="evaluation-count-hint" class="evaluation-count-hint">Prüfungen werden anhand der Spezifikation gefiltert.</div>
 </div>
 
-<button type="button" class="btn-red" onclick="resetBildbewertung()">
-    Bildbewertung zurücksetzen
-</button>
+<details class="evaluation-tools" id="evaluation-tools">
+  <summary>⚙ Verwaltung</summary>
+  <div class="evaluation-editor-toolbar">
+    <button type="button" id="evaluation-editor-toggle" class="btn-blue">Bearbeitungsmodus</button>
+    <div id="evaluation-editor-actions" class="evaluation-editor-actions" hidden>
+      <button type="button" id="evaluation-add-block" class="btn-green">+ Bewertungsbild</button>
+      <button type="button" id="evaluation-export-config">Konfiguration exportieren</button>
+      <button type="button" id="evaluation-import-config">Konfiguration importieren</button>
+      <button type="button" id="evaluation-restore-default" class="btn-red">Standard wiederherstellen</button>
+    </div>
+    <input type="file" id="evaluation-import-file" accept="application/json,.json" hidden>
+  </div>
+</details>
 
 <!-- Alle Bewertungsblöcke werden aus IMAGE_EVALUATION_BLOCKS erzeugt. -->
 <div id="bildbewertung-list"></div>
 
+<div class="evaluation-reset-wrap">
+  <button type="button" class="btn-red" onclick="resetBildbewertung()">Bewertungen leeren</button>
 </div>
 
-<div id="save-load-section" style="margin-top:24px;">
-  <button type="button" id="save-button" class="btn-green">Speichern</button>
-  <button type="button" id="load-toggle-button" class="btn-blue" style="margin-top:8px;">Laden</button>
-
-  <div id="saved-entries-wrapper" style="display:none; margin-top:12px; border:1px solid var(--border); border-radius:var(--radius); padding:12px;">
-    <div style="margin-bottom:8px; font-weight:600;">Gespeicherte Einträge</div>
-    <div id="saved-entries-list" style="display:flex; flex-direction:column; gap:8px;">
-    </div>
-  </div>
 </div>
 
-<button type="button" class="btn-red" onclick="resetForm()">Reset</button>
+<div id="save-load-section" class="form-actions">
+  <div id="autosave-status" class="autosave-status saved">Änderungen automatisch gesichert</div>
+  <button type="button" id="save-button" class="btn-green">Abnahme speichern</button>
+</div>
 </form>
 </div>
 </div>
@@ -1946,6 +2150,13 @@ function updateBandingVisibility() {
 
     box.style.display = show ? 'block' : 'none';
   });
+
+  if (!evaluationEditMode) {
+    const visible = [...document.querySelectorAll('#bildbewertung-list .banding-box')].filter(box => box.style.display !== 'none').length;
+    const hint = document.getElementById('evaluation-count-hint');
+    if (hint) hint.textContent = visible ? `${visible} ${visible === 1 ? 'Prüfung' : 'Prüfungen'} für diese Spezifikation` : 'Noch keine passenden Prüfungen sichtbar';
+  }
+  updateSectionSummaries();
 }
 
 function updateWhiteSplitVisibility() {
@@ -2044,10 +2255,10 @@ function setupSectionToggles() {
     });
   }
 
-  // Startzustand: alle eingeklappt
+  // Startzustand: Schritt 1 geöffnet, weitere Schritte kompakt eingeklappt
   if (allgemeincontent && allgemeintitle) {
-    allgemeincontent.style.display = 'none';
-    allgemeintitle.classList.add('collapsed');
+    allgemeincontent.style.display = 'block';
+    allgemeintitle.classList.remove('collapsed');
   }
   if (speziContent && speziTitle) {
     speziContent.style.display = 'none';
@@ -2074,6 +2285,7 @@ function saveData() {
   });
   if (dateField.value) data['protokoll-datum'] = dateField.value;
   localStorage.setItem('abnahmeprotokoll', JSON.stringify(data));
+  setAutosaveStatus('Änderungen automatisch gesichert');
 }
 
 function loadData() {
@@ -2109,61 +2321,80 @@ function setSavedEntries(entries) {
 }
 
 // Liste unter dem Laden-Button aktualisieren
-function renderSavedEntriesList() {
+function formatSavedDate(value) {
+  if (!value) return '';
+  const parts = String(value).split('-');
+  return parts.length === 3 ? `${parts[2]}.${parts[1]}.${parts[0]}` : value;
+}
+
+function renderSavedEntriesList(filterText = '') {
   const listContainer = document.getElementById('saved-entries-list');
+  const countEl = document.getElementById('saved-entries-count');
   if (!listContainer) return;
 
   listContainer.innerHTML = '';
   const entries = getSavedEntries();
   const keys = Object.keys(entries);
+  const query = String(filterText || '').trim().toLowerCase();
+  const visibleKeys = keys.filter(key => {
+    const data = entries[key] || {};
+    const haystack = [key, data.machinentyp, data.qm_pruefer, data['protokoll-datum'], data.endabnehmer]
+      .filter(Boolean).join(' ').toLowerCase();
+    return !query || haystack.includes(query);
+  });
+
+  if (countEl) countEl.textContent = keys.length ? `${visibleKeys.length}/${keys.length}` : '';
 
   if (keys.length === 0) {
-    listContainer.innerHTML = '<div style="color:var(--muted); font-size:13px;">Keine gespeicherten Einträge vorhanden.</div>';
+    listContainer.innerHTML = '<div style="color:var(--muted); font-size:13px;">Keine gespeicherten Abnahmen vorhanden.</div>';
+    return;
+  }
+  if (visibleKeys.length === 0) {
+    listContainer.innerHTML = '<div style="color:var(--muted); font-size:13px;">Keine passende Abnahme gefunden.</div>';
     return;
   }
 
-  keys.forEach(key => {
+  visibleKeys.forEach(key => {
+    const data = entries[key] || {};
     const box = document.createElement('div');
-    box.style.border = '1px solid var(--border)';
-    box.style.borderRadius = '8px';
-    box.style.padding = '8px 10px';
-    box.style.display = 'flex';
-    box.style.flexDirection = 'column';
-    box.style.gap = '6px';
-    box.style.background = 'rgba(255,255,255,0.02)';
+    box.className = 'saved-entry-card';
 
     const label = document.createElement('div');
-    label.textContent = key; // Seriennummer
-    label.style.fontSize = '14px';
-    label.style.fontWeight = '600';
+    label.className = 'saved-entry-title';
+    label.textContent = key;
+
+    const meta = document.createElement('div');
+    meta.className = 'saved-entry-meta';
+    const line1 = [data.machinentyp, formatSavedDate(data['protokoll-datum'])].filter(Boolean).join(' · ');
+    const line2 = [data.qm_pruefer ? `QM: ${data.qm_pruefer}` : '', data.endabnehmer ? `Endabnehmer: ${data.endabnehmer}` : ''].filter(Boolean).join(' · ');
+    meta.textContent = [line1, line2].filter(Boolean).join('\n');
+    meta.style.whiteSpace = 'pre-line';
 
     const btnGroup = document.createElement('div');
-    btnGroup.style.display = 'flex';
-    btnGroup.style.gap = '8px';
-    btnGroup.style.marginTop = '4px';
+    btnGroup.className = 'saved-entry-actions';
 
     const loadBtn = document.createElement('button');
     loadBtn.type = 'button';
-    loadBtn.textContent = 'Laden';
+    loadBtn.textContent = 'Öffnen';
     loadBtn.classList.add('btn-blue');
-    loadBtn.style.flex = '1 1 0';
     loadBtn.addEventListener('click', () => {
       loadEntryByKey(key);
+      const wrapper = document.getElementById('saved-entries-wrapper');
+      if (wrapper) wrapper.style.display = 'none';
     });
 
     const deleteBtn = document.createElement('button');
     deleteBtn.type = 'button';
-    deleteBtn.textContent = 'Löschen';
-    deleteBtn.classList.add('btn-red');
-    deleteBtn.style.flex = '1 1 0';
-    deleteBtn.addEventListener('click', () => {
-      deleteEntryByKey(key);
-    });
+    deleteBtn.textContent = '🗑';
+    deleteBtn.title = 'Gespeicherte Abnahme löschen';
+    deleteBtn.setAttribute('aria-label', `Abnahme ${key} löschen`);
+    deleteBtn.classList.add('btn-red', 'saved-entry-delete');
+    deleteBtn.addEventListener('click', () => deleteEntryByKey(key));
 
     btnGroup.appendChild(loadBtn);
     btnGroup.appendChild(deleteBtn);
-
     box.appendChild(label);
+    if (meta.textContent) box.appendChild(meta);
     box.appendChild(btnGroup);
     listContainer.appendChild(box);
   });
@@ -2243,6 +2474,8 @@ function loadEntryByKey(key) {
 
   // aktuellen Auto-Save auf diesen Stand setzen
   localStorage.setItem('abnahmeprotokoll', JSON.stringify(data));
+  setAutosaveStatus('Geladene Abnahme automatisch gesichert');
+  updateSectionSummaries();
 }
 
 function deleteEntryByKey(key) {
@@ -2274,8 +2507,8 @@ function resetForm() {
   const bildContent = document.getElementById('section-bild-content');
 
   if (allgemeinContent && allgemeinTitle) {
-    allgemeinContent.style.display = 'none';
-    allgemeinTitle.classList.add('collapsed');
+    allgemeinContent.style.display = 'block';
+    allgemeinTitle.classList.remove('collapsed');
   }
   if (speziContent && speziTitle) {
     speziContent.style.display = 'none';
@@ -2289,6 +2522,41 @@ function resetForm() {
   updateWhiteSplitVisibility();
   updateCorrugatedVisibility();
   updateBandingVisibility();
+  updateSectionSummaries();
+  setAutosaveStatus('Neue Abnahme – Änderungen werden automatisch gesichert', false);
+}
+
+function setAutosaveStatus(text, saved = true) {
+  const status = document.getElementById('autosave-status');
+  if (!status) return;
+  status.textContent = text;
+  status.classList.toggle('saved', saved);
+}
+
+function updateSectionSummaries() {
+  const generalSummary = document.getElementById('section-allgemein-summary');
+  const specSummary = document.getElementById('section-spez-summary');
+  const bildSummary = document.getElementById('section-bild-summary');
+
+  if (generalSummary) {
+    const serial = form.querySelector('[name="seriennummer"]')?.value.trim();
+    const qm = form.querySelector('[name="qm_pruefer"]')?.value;
+    const date = dateField?.value ? formatSavedDate(dateField.value) : '';
+    generalSummary.textContent = [serial, qm ? `QM ${qm}` : '', date].filter(Boolean).join(' · ') || 'Grunddaten';
+  }
+
+  if (specSummary) {
+    const machine = form.querySelector('[name="maschinentyp"]')?.value;
+    const white = form.querySelector('[name="white_varnish"]')?.value;
+    const special = form.querySelector('[name="Sonderfarben"]')?.value;
+    const parts = [machine, white && white !== 'nicht gefüllt' ? white : '', special && special !== 'nicht gefüllt' ? special : ''].filter(Boolean);
+    specSummary.textContent = parts.join(' · ') || 'Maschinenkonfiguration';
+  }
+
+  if (bildSummary) {
+    const visible = [...document.querySelectorAll('#bildbewertung-list .banding-box')].filter(box => box.style.display !== 'none').length;
+    bildSummary.textContent = visible ? `${visible} relevante ${visible === 1 ? 'Prüfung' : 'Prüfungen'}` : 'Relevante Prüfungen';
+  }
 }
 
 window.addEventListener('DOMContentLoaded', async () => {
@@ -2301,8 +2569,10 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   // 1. Form-Buttons verkabeln
   const saveBtn = document.getElementById('save-button');
+  const newEntryBtn = document.getElementById('new-entry-button');
   const loadToggleBtn = document.getElementById('load-toggle-button');
   const savedWrapper = document.getElementById('saved-entries-wrapper');
+  const savedSearch = document.getElementById('saved-entries-search');
 
   if (saveBtn) {
     saveBtn.addEventListener('click', () => {
@@ -2310,10 +2580,19 @@ window.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
+  if (newEntryBtn) {
+    newEntryBtn.addEventListener('click', () => resetForm());
+  }
+
+  if (savedSearch) {
+    savedSearch.addEventListener('input', () => renderSavedEntriesList(savedSearch.value));
+  }
+
   if (loadToggleBtn && savedWrapper) {
     loadToggleBtn.addEventListener('click', () => {
       const isHidden = savedWrapper.style.display === 'none' || !savedWrapper.style.display;
       if (isHidden) {
+        if (savedSearch) savedSearch.value = '';
         renderSavedEntriesList();
         savedWrapper.style.display = 'block';
       } else {
@@ -2327,6 +2606,8 @@ window.addEventListener('DOMContentLoaded', async () => {
   updateCorrugatedVisibility();
   updateWhiteSplitVisibility();
   updateBandingVisibility();
+  updateSectionSummaries();
+  setAutosaveStatus(localStorage.getItem('abnahmeprotokoll') ? 'Änderungen automatisch gesichert' : 'Änderungen werden automatisch gesichert', !!localStorage.getItem('abnahmeprotokoll'));
 });
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -2417,11 +2698,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (!themeToggle) return;
 
+    const syncThemeIcon = () => {
+        const isLight = document.body.classList.contains("light-theme");
+        themeToggle.textContent = isLight ? "☀" : "☾";
+        themeToggle.setAttribute('aria-label', isLight ? 'Dunkle Darstellung aktivieren' : 'Helle Darstellung aktivieren');
+    };
+
     const savedTheme = localStorage.getItem("theme");
 
     if (savedTheme === "light") {
         document.body.classList.add("light-theme");
     }
+    syncThemeIcon();
 
     themeToggle.addEventListener("click", function () {
         document.body.classList.toggle("light-theme");
@@ -2431,6 +2719,7 @@ document.addEventListener("DOMContentLoaded", function () {
             : "dark";
 
         localStorage.setItem("theme", currentTheme);
+        syncThemeIcon();
     });
 });
 
@@ -2450,6 +2739,7 @@ function resetBildbewertung() {
             feld.value = "";
         }
     });
+    updateSectionSummaries();
 }
 
 form.addEventListener('input', (event) => {
@@ -2457,6 +2747,7 @@ form.addEventListener('input', (event) => {
   updateBandingVisibility();
   updateWhiteSplitVisibility();
   updateCorrugatedVisibility();
+  updateSectionSummaries();
 });
 
 </script>
