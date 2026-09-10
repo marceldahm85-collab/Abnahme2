@@ -23,6 +23,10 @@
             --rating-4: #f97316;
             --rating-5: #ef4444;
             --calendar-icon-filter: invert(1);
+            --field-bg: #292b30;
+            --field-border: #50535b;
+            --field-focus: #60a5fa;
+            --field-placeholder: #8b8e96;
         }
 
         body.light-theme {
@@ -39,6 +43,10 @@
             --muted: #666666;
             --shadow: 0 4px 20px rgba(0,0,0,0.12);
             --calendar-icon-filter: invert(0);
+            --field-bg: rgba(255, 255, 255, 0.82);
+            --field-border: #b9bec7;
+            --field-focus: #2563eb;
+            --field-placeholder: #777b83;
 
             background-size: 140% 140%;
             background-attachment: fixed;
@@ -157,11 +165,26 @@
             border: 1px solid var(--border);
             font-size: 14px;
             margin-bottom: 16px;
-            background: var(--card);
             color: var(--text);
             box-sizing: border-box;
             width: 100%;
         }
+
+        input, textarea, select {
+            background: var(--field-bg);
+            border-color: var(--field-border);
+            transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--field-focus);
+            box-shadow: 0 0 0 2px color-mix(in srgb, var(--field-focus) 24%, transparent);
+        }
+
+        input::placeholder, textarea::placeholder { color: var(--field-placeholder); }
+        select option { background: #292b30; color: #fff; }
+        body.light-theme select option { background: #fff; color: #111; }
 
         /* Kalender-Icon im Date-Input weiß einfärben */
         input[type="date"]::-webkit-calendar-picker-indicator {
@@ -628,18 +651,116 @@ body.reference-image-open {
 .autosave-status.saved::before { content: '✓'; color: #22c55e; font-weight: 700; }
 .form-actions .btn-green { margin-bottom: 0; }
 
+/* ── Kompakte Mobile-Eingabe und Bildbewertung ───────────────────────── */
+.compact-form-row {
+    display: grid;
+    grid-template-columns: minmax(108px, 41%) minmax(0, 59%);
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+.compact-form-row > label {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.2;
+}
+.compact-form-row > input,
+.compact-form-row > select,
+.compact-form-row > textarea {
+    min-width: 0;
+    min-height: 38px;
+    height: 38px;
+    margin: 0;
+    padding: 8px 10px;
+    border-radius: 9px;
+    font-size: 14px;
+}
+.dependent-option > .compact-form-row { margin-bottom: 0; }
+
+.rating-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    min-height: 34px;
+    margin-bottom: 7px;
+}
+.rating-row .rating-caption {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.15;
+}
+.rating-row .rating-caption::before { display: none; }
+.rating-caption { margin-left: 0; }
+.rating-group {
+    flex: 0 0 auto;
+    gap: 5px;
+    margin: 0;
+}
+.rating-group label {
+    width: 32px;
+    height: 32px;
+    flex: 0 0 32px;
+    border-width: 1.5px;
+    font-size: 13px;
+}
+.banding-box-header { margin-bottom: 9px; gap: 8px; flex-wrap: nowrap; }
+.banding-box-header .banding-box-title { min-width: 0; line-height: 1.2; }
+.banding-box-header .reference-image-btn {
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    justify-content: center;
+    gap: 0;
+}
+.banding-box-header .reference-image-btn span:last-child { display: none; }
+.banding-box > label {
+    margin-bottom: 4px;
+    font-size: 13px;
+}
+.banding-box > textarea {
+    height: 36px;
+    min-height: 36px;
+    padding: 7px 9px;
+    margin-bottom: 9px;
+    border-radius: 8px;
+}
+.number-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin-bottom: 9px;
+}
+.number-grid label { margin-bottom: 4px; font-size: 12px; }
+.number-grid input { min-height: 36px; padding: 7px 8px; }
+.signoff-row { margin-bottom: 6px; }
+
 @media (max-width: 600px) {
     body { padding: 16px 10px 28px; }
-    .card { padding: 18px 14px; }
-    .header-image { max-width: 180px; margin-bottom: 10px; }
-    .section-title { margin-top: 18px; }
-    .banding-box { padding: 14px; margin-bottom: 16px; }
-    .banding-box-title { font-size: 18px; }
+    .card { padding: 16px 12px; }
+    .header-image { max-width: 168px; margin-bottom: 8px; }
+    .section-title { margin-top: 13px; margin-bottom: 7px; padding: 10px 11px; }
+    .section-title-main { font-size: 17px; }
+    .step-badge { width: 26px; height: 26px; flex-basis: 26px; }
+    .dependent-option { margin-left: 4px; padding-left: 8px; }
+    .banding-box { padding: 11px; margin-bottom: 10px; }
+    .banding-box-title { font-size: 16px; }
+    .evaluation-section-head { margin-bottom: 8px; }
+    .evaluation-tools { margin-bottom: 10px; }
 }
 
 @media (max-width: 390px) {
     .start-actions { grid-template-columns: 1fr; }
     .section-summary { padding-left: 0; }
+    .compact-form-row { grid-template-columns: minmax(104px, 40%) minmax(0, 60%); gap: 7px; }
+    .rating-group { gap: 4px; }
+    .rating-group label { width: 30px; height: 30px; flex-basis: 30px; font-size: 12px; }
+}
+
+@media (max-width: 340px) {
+    .compact-form-row { grid-template-columns: minmax(96px, 39%) minmax(0, 61%); }
+    .rating-group label { width: 28px; height: 28px; flex-basis: 28px; }
 }
 
 /* ── Bearbeitungsmodus Bildbewertung ─────────────────────────────────── */
@@ -1849,21 +1970,16 @@ function createRatingPlaceholder(field) {
   group.className = 'rating-group';
   group.dataset.ratingName = field.name;
 
-  if (field.layout === 'row') {
-    const row = document.createElement('div');
-    row.className = 'rating-row';
-    const caption = document.createElement('div');
-    caption.className = 'rating-caption';
-    caption.textContent = field.label || '';
-    row.appendChild(caption);
-    row.appendChild(group);
-    return row;
-  }
-
-  const fragment = document.createDocumentFragment();
-  fragment.appendChild(createEvaluationLabel(field.label));
-  fragment.appendChild(group);
-  return fragment;
+  // Alle Bewertungsfelder werden kompakt in einer Zeile dargestellt.
+  // Die Inputs/Namen/Werte bleiben unverändert; nur die Darstellung wird verdichtet.
+  const row = document.createElement('div');
+  row.className = 'rating-row';
+  const caption = document.createElement('div');
+  caption.className = 'rating-caption';
+  caption.textContent = field.label || '';
+  row.appendChild(caption);
+  row.appendChild(group);
+  return row;
 }
 
 function createSignoffField(field) {
@@ -2223,6 +2339,39 @@ function updateCorrugatedVisibility() {
   }
 }
 
+function setupCompactFormRows() {
+  const sections = [
+    document.getElementById('section-allgemein-content'),
+    document.getElementById('section-spez-content')
+  ].filter(Boolean);
+
+  const wrapPair = (parent, label, control) => {
+    if (!label || !control || label.closest('.compact-form-row')) return;
+    const row = document.createElement('div');
+    row.className = 'compact-form-row';
+    const fieldName = control.name || control.id || '';
+    if (fieldName) row.dataset.fieldName = fieldName;
+    parent.insertBefore(row, label);
+    row.append(label, control);
+  };
+
+  sections.forEach(section => {
+    [...section.children].forEach(child => {
+      if (child.matches('label')) {
+        const control = child.nextElementSibling;
+        if (control && control.matches('input, select, textarea')) wrapPair(section, child, control);
+        return;
+      }
+
+      if (child.classList.contains('dependent-option')) {
+        const label = [...child.children].find(el => el.matches?.('label'));
+        const control = [...child.children].find(el => el.matches?.('input, select, textarea'));
+        if (label && control) wrapPair(child, label, control);
+      }
+    });
+  });
+}
+
 function setupSectionToggles() {
   const allgemeintitle = document.getElementById('section-allgemein-toggle');
   const allgemeincontent = document.getElementById('section-allgemein-content');
@@ -2566,6 +2715,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   applyRatingCaptionColors();
   setupReferenceImageModal();
   setupEvaluationEditor();
+  setupCompactFormRows();
 
   // 1. Form-Buttons verkabeln
   const saveBtn = document.getElementById('save-button');
