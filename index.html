@@ -677,6 +677,20 @@ body.reference-image-open {
 }
 .dependent-option > .compact-form-row { margin-bottom: 0; }
 
+/* Spezifikationen: einheitlicher vertikaler Rhythmus für normale und
+   bedingt eingeblendete Zeilen. Der Abstand sitzt bei Wrappern am Wrapper,
+   damit Ja/Nein-Segmente und Selects exakt gleich voneinander getrennt sind. */
+#section-spez-content > .compact-form-row,
+#section-spez-content > .dependent-option {
+    margin-bottom: 8px;
+}
+#section-spez-content > .dependent-option > .compact-form-row {
+    margin-bottom: 0;
+}
+#section-spez-content > :last-child {
+    margin-bottom: 0;
+}
+
 .segmented-select-source {
     position: absolute !important;
     width: 1px !important;
