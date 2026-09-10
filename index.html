@@ -600,9 +600,9 @@ body.reference-image-open {
 .saved-entry-delete { width: 44px; padding: 0; font-size: 18px; }
 
 .dependent-option {
-    margin-left: 10px;
-    padding-left: 12px;
-    border-left: 2px solid rgba(37,99,235,0.45);
+    margin-left: 0;
+    padding-left: 0;
+    border-left: 0;
 }
 
 .evaluation-section-head {
@@ -677,6 +677,111 @@ body.reference-image-open {
 }
 .dependent-option > .compact-form-row { margin-bottom: 0; }
 
+.segmented-select-source {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
+.segmented-control {
+    min-width: 0;
+    min-height: 38px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px;
+    padding: 3px;
+    border: 1px solid var(--field-border);
+    border-radius: 9px;
+    background: var(--field-bg);
+    box-sizing: border-box;
+}
+.segmented-option {
+    min-width: 0;
+    height: 30px;
+    margin: 0;
+    padding: 4px 6px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1;
+}
+.segmented-option:hover { background: rgba(127,127,127,0.12); }
+.segmented-option.is-selected {
+    background: #2563eb;
+    color: #fff;
+}
+
+.evaluation-note {
+    margin: 5px 0 2px;
+    border-top: 1px solid rgba(127,127,127,0.16);
+    padding-top: 5px;
+}
+.evaluation-note > summary {
+    list-style: none;
+    width: fit-content;
+    min-height: 28px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 2px 0;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+}
+.evaluation-note > summary::-webkit-details-marker { display: none; }
+.evaluation-note > summary::before { content: '+'; font-size: 16px; line-height: 1; }
+.evaluation-note[open] > summary::before { content: '−'; }
+.evaluation-note.has-value > summary { color: var(--text); }
+.evaluation-note textarea {
+    height: 54px;
+    min-height: 54px;
+    margin: 5px 0 3px;
+    padding: 8px 9px;
+    border-radius: 8px;
+}
+
+.banding-box-summary {
+    display: none;
+    align-items: center;
+    gap: 7px;
+    min-width: 0;
+    margin-top: 1px;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.25;
+}
+.banding-box-summary .summary-check {
+    color: #22c55e;
+    font-weight: 800;
+}
+.banding-box.is-complete { border-color: rgba(34,197,94,0.42); }
+.banding-box.is-collapsed {
+    padding-top: 9px;
+    padding-bottom: 9px;
+}
+.banding-box.is-collapsed .banding-box-header { margin-bottom: 0; }
+.banding-box.is-collapsed .banding-box-body { display: none; }
+.banding-box.is-collapsed .banding-box-summary { display: flex; }
+.banding-box.is-collapsed .banding-box-title { font-size: 15px; }
+.banding-box.is-collapsed .reference-image-btn { width: 30px; height: 30px; }
+.banding-box.is-collapsed .evaluation-block-actions { display: none; }
+body.evaluation-edit-mode .banding-box.is-collapsed .banding-box-body { display: block; }
+body.evaluation-edit-mode .banding-box.is-collapsed .banding-box-summary { display: none; }
+body.evaluation-edit-mode .banding-box.is-collapsed { padding-top: 11px; padding-bottom: 11px; }
+.banding-box-header { cursor: pointer; }
+.reference-image-btn,
+.evaluation-block-actions,
+.evaluation-block-actions button { cursor: pointer; }
+
 .rating-row {
     display: flex;
     align-items: center;
@@ -720,13 +825,6 @@ body.reference-image-open {
     margin-bottom: 4px;
     font-size: 13px;
 }
-.banding-box > textarea {
-    height: 36px;
-    min-height: 36px;
-    padding: 7px 9px;
-    margin-bottom: 9px;
-    border-radius: 8px;
-}
 .number-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 8px;
@@ -743,7 +841,7 @@ body.reference-image-open {
     .section-title { margin-top: 13px; margin-bottom: 7px; padding: 10px 11px; }
     .section-title-main { font-size: 17px; }
     .step-badge { width: 26px; height: 26px; flex-basis: 26px; }
-    .dependent-option { margin-left: 4px; padding-left: 8px; }
+    .dependent-option { margin-left: 0; padding-left: 0; }
     .banding-box { padding: 11px; margin-bottom: 10px; }
     .banding-box-title { font-size: 16px; }
     .evaluation-section-head { margin-bottom: 8px; }
@@ -1441,6 +1539,7 @@ function rerenderEvaluationBlocksPreservingValues() {
   applyRatingCaptionColors();
   restoreEvaluationValues(state);
   updateBandingVisibility();
+  refreshAllEvaluationBlocks({autoCollapseCompleted:true});
 }
 
 function createBlockActionButton(action, text, title) {
@@ -1937,23 +2036,47 @@ function setupEvaluationEditor() {
 
 function applyRatingCaptionColors() {
   const colorMap = {
-    'Braun': {color:'#8B4513',border:'#8B4513'},
-    'Grau-1': {color:'#5c5c5c',border:'#5c5c5c',title:'Grau-1 = 40% CMYK-Farben'},
-    'Grau-2': {color:'#292929',border:'#292929',title:'Grau-2 = 60% CMYK-Farben'},
-    'Grau-3': {color:'#4d4d4d',border:'#4d4d4d',title:'Grau-3 = K 70, CMS activated'},
-    'Rot': {color:'#ff0000',border:'#ff0000'},
-    'Grün': {color:'#008000',border:'#008000'},
-    'Pantone': {color:'#201747',border:'#201747'},
-    'Schwarz': {color:'#000000',border:'#000000'}
+    braun: {color:'#8B4513',border:'#8B4513'},
+    grau1: {color:'#5c5c5c',border:'#5c5c5c',title:'Grau-1 = 40% CMYK-Farben'},
+    grau2: {color:'#292929',border:'#666',title:'Grau-2 = 60% CMYK-Farben'},
+    grau3: {color:'#4d4d4d',border:'#777',title:'Grau-3 = K 70, CMS activated'},
+    rot: {color:'#ff0000',border:'#ff0000'},
+    gruen: {color:'#008000',border:'#008000'},
+    pantone: {color:'#201747',border:'#6258a3'},
+    schwarz: {color:'#000000',border:'#777'},
+    black: {color:'#000000',border:'#777'},
+    cyan: {color:'#00ffff',border:'#00b7b7'},
+    magenta: {color:'#ff00ff',border:'#c100c1'},
+    yellow: {color:'#ffff00',border:'#b8b800'},
+    gelb: {color:'#ffff00',border:'#b8b800'},
+    blau: {color:'#0066ff',border:'#0066ff'},
+    violett: {color:'#8a2be2',border:'#8a2be2'},
+    orange: {color:'#ff8c00',border:'#ff8c00'},
+    weiss: {color:'#ffffff',border:'#999'}
   };
+
+  const normalize = text => String(text || '')
+    .trim()
+    .toLowerCase()
+    .replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss')
+    .replace(/grau[\s_-]*(\d)/g, 'grau$1')
+    .replace(/[^a-z0-9]/g,'');
+
   document.querySelectorAll('.rating-caption').forEach(caption => {
-    const config = colorMap[caption.textContent.trim()];
-    if (!config || caption.querySelector('.rating-color-dot')) return;
+    caption.querySelector('.rating-color-dot')?.remove();
+    const key = normalize(caption.textContent);
+    const config = colorMap[key];
+    if (!config) return;
+
     const dot = document.createElement('span');
-    dot.className='rating-color-dot';
-    Object.assign(dot.style,{display:'inline-block',width:'16px',height:'16px',minWidth:'16px',borderRadius:'50%',backgroundColor:config.color,border:'1px solid '+config.border,marginRight:'7px',verticalAlign:'middle',boxSizing:'border-box'});
-    if (config.title) dot.title=config.title;
-    caption.style.display='inline-flex'; caption.style.alignItems='center'; caption.prepend(dot);
+    dot.className = 'rating-color-dot';
+    Object.assign(dot.style, {
+      display:'inline-block', width:'14px', height:'14px', minWidth:'14px',
+      borderRadius:'50%', backgroundColor:config.color, border:'1px solid '+config.border,
+      marginRight:'6px', verticalAlign:'middle', boxSizing:'border-box', flex:'0 0 14px'
+    });
+    if (config.title) dot.title = config.title;
+    caption.prepend(dot);
   });
 }
 
@@ -1988,7 +2111,12 @@ function createSignoffField(field) {
   input.name = field.name;
   input.value = field.value || 'ok';
   input.className = 'signoff-input';
-  if (field.id) input.id = field.id;
+  if (field.id) {
+    let runtimeId = field.id;
+    let suffix = 2;
+    while (document.getElementById(runtimeId)) runtimeId = `${field.id}-${suffix++}`;
+    input.id = runtimeId;
+  }
 
   const check = document.createElement('span');
   check.className = 'signoff-check';
@@ -2016,15 +2144,20 @@ function createSignoffField(field) {
 }
 
 function createTextareaField(field) {
-  const fragment = document.createDocumentFragment();
-  fragment.appendChild(createEvaluationLabel(field.label));
+  const details = document.createElement('details');
+  details.className = 'evaluation-note';
+
+  const summary = document.createElement('summary');
+  summary.textContent = (field.label || 'Anmerkung').replace(/\s*:$/, '') || 'Anmerkung';
+
   const textarea = document.createElement('textarea');
   textarea.name = field.name;
   if (field.id) textarea.id = field.id;
   if (field.placeholder) textarea.placeholder = field.placeholder;
   if (field.rows) textarea.rows = field.rows;
-  fragment.appendChild(textarea);
-  return fragment;
+
+  details.append(summary, textarea);
+  return details;
 }
 
 function createNumberGrid(field) {
@@ -2062,6 +2195,9 @@ function renderEvaluationBlocks() {
 
     const header = document.createElement('div');
     header.className = 'banding-box-header';
+    header.setAttribute('role', 'button');
+    header.setAttribute('tabindex', '0');
+    header.setAttribute('aria-expanded', 'true');
 
     const title = document.createElement('div');
     title.className = 'banding-box-title';
@@ -2095,7 +2231,11 @@ function renderEvaluationBlocks() {
     );
     header.appendChild(editorActions);
 
-    box.appendChild(header);
+    const summary = document.createElement('div');
+    summary.className = 'banding-box-summary';
+
+    const body = document.createElement('div');
+    body.className = 'banding-box-body';
 
     (block.fields || []).forEach(field => {
       let element = null;
@@ -2103,9 +2243,10 @@ function renderEvaluationBlocks() {
       else if (field.type === 'textarea') element = createTextareaField(field);
       else if (field.type === 'signoff') element = createSignoffField(field);
       else if (field.type === 'numberGrid') element = createNumberGrid(field);
-      if (element) box.appendChild(element);
+      if (element) body.appendChild(element);
     });
 
+    box.append(header, summary, body);
     list.appendChild(box);
   });
 }
@@ -2315,6 +2456,7 @@ function updateWhiteSplitVisibility() {
       if (liqSel) liqSel.value = '';
     }
   }
+  syncAllSegmentedSelects();
 }
 
 function updateCorrugatedVisibility() {
@@ -2337,6 +2479,7 @@ function updateCorrugatedVisibility() {
     const corrSel = wrapper.querySelector('[name="corrugated"]');
     if (corrSel) corrSel.value = '';
   }
+  syncAllSegmentedSelects();
 }
 
 function setupCompactFormRows() {
@@ -2370,6 +2513,163 @@ function setupCompactFormRows() {
       }
     });
   });
+}
+
+function syncSegmentedSelect(select) {
+  if (!select) return;
+  const row = select.closest('.compact-form-row');
+  const control = row?.querySelector('.segmented-control');
+  if (!control) return;
+  control.querySelectorAll('.segmented-option').forEach(button => {
+    const selected = button.dataset.value === select.value;
+    button.classList.toggle('is-selected', selected);
+    button.setAttribute('aria-pressed', selected ? 'true' : 'false');
+  });
+}
+
+function syncAllSegmentedSelects() {
+  document.querySelectorAll('select.segmented-select-source').forEach(syncSegmentedSelect);
+}
+
+function setupSegmentedSelects() {
+  ['corrugated', 'haptprint', 'liquidlamination'].forEach(name => {
+    const select = form.querySelector(`select[name="${name}"]`);
+    if (!select || select.classList.contains('segmented-select-source')) return;
+    const row = select.closest('.compact-form-row');
+    if (!row) return;
+
+    select.classList.add('segmented-select-source');
+    select.tabIndex = -1;
+    select.setAttribute('aria-hidden', 'true');
+
+    const control = document.createElement('div');
+    control.className = 'segmented-control';
+    control.setAttribute('role', 'group');
+    control.setAttribute('aria-label', row.querySelector('label')?.textContent?.trim() || name);
+
+    ['Ja','Nein'].forEach(value => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'segmented-option';
+      button.dataset.value = value;
+      button.textContent = value;
+      button.addEventListener('click', () => {
+        select.value = value;
+        syncSegmentedSelect(select);
+        select.dispatchEvent(new Event('input', {bubbles:true}));
+        select.dispatchEvent(new Event('change', {bubbles:true}));
+      });
+      control.appendChild(button);
+    });
+
+    row.appendChild(control);
+    select.addEventListener('change', () => syncSegmentedSelect(select));
+    syncSegmentedSelect(select);
+  });
+}
+
+function updateEvaluationNoteState(details) {
+  if (!details) return;
+  const textarea = details.querySelector('textarea');
+  const summary = details.querySelector('summary');
+  const hasValue = !!textarea?.value.trim();
+  details.classList.toggle('has-value', hasValue);
+  if (summary) {
+    const original = (details.dataset.baseLabel || summary.textContent || 'Anmerkung').replace(/\s*[✓•].*$/, '').trim();
+    details.dataset.baseLabel = original;
+    summary.textContent = hasValue ? `${original} ✓` : original;
+  }
+}
+
+function getEvaluationBlockProgress(box) {
+  if (!box) return {done:0,total:0,complete:false,hasNote:false};
+  let done = 0;
+  let total = 0;
+
+  box.querySelectorAll('.rating-group').forEach(group => {
+    total += 1;
+    if (group.querySelector('input:checked')) done += 1;
+  });
+  box.querySelectorAll('.signoff-input').forEach(input => {
+    total += 1;
+    if (input.checked) done += 1;
+  });
+  box.querySelectorAll('.number-grid input').forEach(input => {
+    total += 1;
+    if (String(input.value || '').trim() !== '') done += 1;
+  });
+
+  const hasNote = [...box.querySelectorAll('.evaluation-note textarea')].some(el => el.value.trim());
+  return {done, total, complete: total > 0 && done === total, hasNote};
+}
+
+function setEvaluationBlockCollapsed(box, collapsed) {
+  if (!box || evaluationEditMode) return;
+  box.classList.toggle('is-collapsed', !!collapsed);
+  box.querySelector('.banding-box-header')?.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+}
+
+function refreshEvaluationBlock(box, {autoCollapseCompleted = false} = {}) {
+  if (!box) return;
+  box.querySelectorAll('.evaluation-note').forEach(updateEvaluationNoteState);
+  const state = getEvaluationBlockProgress(box);
+  box.classList.toggle('is-complete', state.complete);
+
+  const summary = box.querySelector('.banding-box-summary');
+  if (summary) {
+    summary.replaceChildren();
+    if (state.complete) {
+      const check = document.createElement('span');
+      check.className = 'summary-check';
+      check.textContent = '✓';
+      const text = document.createElement('span');
+      text.textContent = `${state.done}/${state.total} Prüfpunkte${state.hasNote ? ' · Anmerkung' : ''}`;
+      summary.append(check, text);
+    } else {
+      summary.textContent = `${state.done}/${state.total} Prüfpunkte${state.hasNote ? ' · Anmerkung' : ''}`;
+    }
+  }
+
+  if (!state.complete && box.classList.contains('is-collapsed')) setEvaluationBlockCollapsed(box, false);
+  if (autoCollapseCompleted && state.complete) setEvaluationBlockCollapsed(box, true);
+}
+
+function refreshAllEvaluationBlocks(options = {}) {
+  document.querySelectorAll('#bildbewertung-list .banding-box').forEach(box => refreshEvaluationBlock(box, options));
+}
+
+function setupEvaluationBlockCompaction() {
+  const list = document.getElementById('bildbewertung-list');
+  if (!list || list.dataset.compactionReady === 'true') return;
+  list.dataset.compactionReady = 'true';
+
+  list.addEventListener('click', event => {
+    const header = event.target.closest('.banding-box-header');
+    if (!header || evaluationEditMode) return;
+    if (event.target.closest('.reference-image-btn, .evaluation-block-actions, .evaluation-block-action')) return;
+    const box = header.closest('.banding-box');
+    setEvaluationBlockCollapsed(box, !box.classList.contains('is-collapsed'));
+  });
+
+  list.addEventListener('keydown', event => {
+    if (!['Enter',' '].includes(event.key) || evaluationEditMode) return;
+    const header = event.target.closest('.banding-box-header');
+    if (!header || event.target !== header) return;
+    event.preventDefault();
+    const box = header.closest('.banding-box');
+    setEvaluationBlockCollapsed(box, !box.classList.contains('is-collapsed'));
+  });
+}
+
+function handleEvaluationInput(event) {
+  const box = event.target.closest?.('.banding-box');
+  if (!box) return;
+  const note = event.target.closest?.('.evaluation-note');
+  if (note) updateEvaluationNoteState(note);
+  const shouldAutoCollapse = !note && (
+    event.target.matches?.('.rating-group input, .signoff-input')
+  );
+  refreshEvaluationBlock(box, {autoCollapseCompleted: shouldAutoCollapse});
 }
 
 function setupSectionToggles() {
@@ -2620,6 +2920,8 @@ function loadEntryByKey(key) {
   updateWhiteSplitVisibility();
   updateCorrugatedVisibility();
   updateBandingVisibility();
+  syncAllSegmentedSelects();
+  refreshAllEvaluationBlocks({autoCollapseCompleted:true});
 
   // aktuellen Auto-Save auf diesen Stand setzen
   localStorage.setItem('abnahmeprotokoll', JSON.stringify(data));
@@ -2671,6 +2973,8 @@ function resetForm() {
   updateWhiteSplitVisibility();
   updateCorrugatedVisibility();
   updateBandingVisibility();
+  syncAllSegmentedSelects();
+  refreshAllEvaluationBlocks();
   updateSectionSummaries();
   setAutosaveStatus('Neue Abnahme – Änderungen werden automatisch gesichert', false);
 }
@@ -2716,6 +3020,8 @@ window.addEventListener('DOMContentLoaded', async () => {
   setupReferenceImageModal();
   setupEvaluationEditor();
   setupCompactFormRows();
+  setupSegmentedSelects();
+  setupEvaluationBlockCompaction();
 
   // 1. Form-Buttons verkabeln
   const saveBtn = document.getElementById('save-button');
@@ -2752,10 +3058,12 @@ window.addEventListener('DOMContentLoaded', async () => {
   }
 
   loadData();
+  syncAllSegmentedSelects();
   setupSectionToggles();
   updateCorrugatedVisibility();
   updateWhiteSplitVisibility();
   updateBandingVisibility();
+  refreshAllEvaluationBlocks({autoCollapseCompleted:true});
   updateSectionSummaries();
   setAutosaveStatus(localStorage.getItem('abnahmeprotokoll') ? 'Änderungen automatisch gesichert' : 'Änderungen werden automatisch gesichert', !!localStorage.getItem('abnahmeprotokoll'));
 });
@@ -2889,6 +3197,8 @@ function resetBildbewertung() {
             feld.value = "";
         }
     });
+    bildBereich.querySelectorAll('.evaluation-note').forEach(note => { note.open = false; });
+    refreshAllEvaluationBlocks();
     updateSectionSummaries();
 }
 
@@ -2897,7 +3207,14 @@ form.addEventListener('input', (event) => {
   updateBandingVisibility();
   updateWhiteSplitVisibility();
   updateCorrugatedVisibility();
+  handleEvaluationInput(event);
   updateSectionSummaries();
+});
+
+form.addEventListener('change', (event) => {
+  if (!event.target.matches?.('.number-grid input')) return;
+  const box = event.target.closest('.banding-box');
+  if (box) refreshEvaluationBlock(box, {autoCollapseCompleted:true});
 });
 
 </script>
