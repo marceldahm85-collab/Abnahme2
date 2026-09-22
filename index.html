@@ -3289,7 +3289,9 @@ form.addEventListener('input', (event) => {
 <style id="d4-pdf-export-style">
 .protocol-export-actions{margin-top:8px;display:none;}
 .protocol-export-actions.visible{display:block;}
+.protocol-export-buttons{display:grid;grid-template-columns:1fr auto;gap:8px;}
 .protocol-export-actions button{margin:0;}
+#protocol-download-button{width:auto;min-width:44px;padding:9px 12px;}
 .protocol-export-status{margin-top:7px;font-size:12px;line-height:1.35;color:var(--muted);}
 .protocol-export-status.ok{color:#22c55e;}
 .protocol-export-status.warn{color:#f59e0b;}
@@ -3500,32 +3502,106 @@ form.addEventListener('input', (event) => {
   }
   function d4SafeFilename(s) { return String(s||'Abnahme').trim().replace(/[^A-Za-z0-9._-]+/g,'_').replace(/^_+|_+$/g,'') || 'Abnahme'; }
 
+  let d4LastPdf = null;
+
+  function d4PdfFilename() {
+    const serial=d4SafeFilename(val('seriennummer'));
+    return `${serial}_P5-D4_Abnahmeprotokoll.pdf`;
+  }
+
+  function d4DownloadBlob(blob, fileName=d4PdfFilename()) {
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url; a.download=fileName;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),30000);
+  }
+
+  async function d4CreatePdfBlob() {
+    const warnings=[], pages=[];
+    for(let i=0;i<D4_TEMPLATE_JPEGS.length;i++) {
+      d4Status(`D4-Protokoll wird erstellt … Seite ${i+1}/12`);
+      const img=await d4LoadImage(D4_TEMPLATE_JPEGS[i]);
+      const canvas=document.createElement('canvas'); canvas.width=D4_IMG_W; canvas.height=D4_IMG_H;
+      const ctx=canvas.getContext('2d',{alpha:false});
+      ctx.drawImage(img,0,0,D4_IMG_W,D4_IMG_H);
+      d4OverlayPage(ctx,i+1,warnings);
+      pages.push(await d4CanvasJpegBytes(canvas));
+      canvas.width=1; canvas.height=1;
+    }
+    const pdf=d4BuildPdf(pages);
+    return {blob:new Blob([pdf],{type:'application/pdf'}), warnings};
+  }
+
   async function generateD4ProtocolPdf() {
     const machine=val('maschinentyp');
-    if(!['P5 D4','P5 D4 - USA'].includes(machine)) { d4Status('PDF-Export ist in dieser Ausbaustufe zunächst für P5 D4 umgesetzt.','warn'); return; }
-    const btn=document.getElementById('protocol-export-button'); if(btn)btn.disabled=true;
+    if(!['P5 D4','P5 D4 - USA'].includes(machine)) {
+      d4Status('PDF-Export ist in dieser Ausbaustufe zunächst für P5 D4 umgesetzt.','warn');
+      return;
+    }
+    const btn=document.getElementById('protocol-export-button');
+    const dlBtn=document.getElementById('protocol-download-button');
+    if(btn)btn.disabled=true; if(dlBtn)dlBtn.disabled=true;
     d4Status('D4-Protokoll wird erstellt …');
     try {
-      const warnings=[], pages=[];
-      for(let i=0;i<D4_TEMPLATE_JPEGS.length;i++) {
-        d4Status(`D4-Protokoll wird erstellt … Seite ${i+1}/12`);
-        const img=await d4LoadImage(D4_TEMPLATE_JPEGS[i]); const canvas=document.createElement('canvas'); canvas.width=D4_IMG_W; canvas.height=D4_IMG_H;
-        const ctx=canvas.getContext('2d',{alpha:false}); ctx.drawImage(img,0,0,D4_IMG_W,D4_IMG_H); d4OverlayPage(ctx,i+1,warnings); pages.push(await d4CanvasJpegBytes(canvas));
-        canvas.width=1;canvas.height=1;
+      const {blob,warnings}=await d4CreatePdfBlob();
+      const fileName=d4PdfFilename();
+      d4LastPdf={blob,fileName,warnings};
+      const file=new File([blob],fileName,{type:'application/pdf'});
+      const shareData={
+        files:[file],
+        title:'Abnahmeprotokoll '+(val('seriennummer')||''),
+        text:'Abnahmeprotokoll '+(val('seriennummer')||'')
+      };
+      const canShareFiles=typeof navigator.share==='function' &&
+        (typeof navigator.canShare!=='function' || navigator.canShare(shareData));
+
+      if(canShareFiles) {
+        try {
+          await navigator.share(shareData);
+          if(warnings.length) d4Status('✓ PDF erstellt und zum Teilen übergeben. Hinweis: '+warnings.join(' '),'warn');
+          else d4Status('✓ PDF erstellt und zum Teilen übergeben.','ok');
+        } catch(shareErr) {
+          if(shareErr?.name==='AbortError') {
+            d4Status('Teilen abgebrochen. Mit dem Download-Button kannst du die PDF trotzdem speichern.','warn');
+          } else {
+            console.warn('Datei-Teilen nicht möglich, PDF wird heruntergeladen.',shareErr);
+            d4DownloadBlob(blob,fileName);
+            d4Status('Datei-Teilen war nicht möglich. Die PDF wurde stattdessen heruntergeladen.','warn');
+          }
+        }
+      } else {
+        d4DownloadBlob(blob,fileName);
+        if(warnings.length) d4Status('✓ PDF erstellt und heruntergeladen. Hinweis: '+warnings.join(' '),'warn');
+        else d4Status('✓ Datei-Teilen wird von diesem Browser nicht unterstützt. PDF wurde heruntergeladen.','ok');
       }
-      const pdf=d4BuildPdf(pages), blob=new Blob([pdf],{type:'application/pdf'}), url=URL.createObjectURL(blob);
-      const serial=d4SafeFilename(val('seriennummer')); const a=document.createElement('a'); a.href=url; a.download=`${serial}_P5-D4_Abnahmeprotokoll.pdf`; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),30000);
-      if(warnings.length) d4Status('✓ PDF erstellt. Hinweis: '+warnings.join(' '),'warn'); else d4Status('✓ D4-PDF wurde erstellt.','ok');
-    } catch(err) { console.error(err); d4Status('PDF konnte nicht erstellt werden: '+(err?.message||err),'error'); } finally { if(btn)btn.disabled=false; }
+    } catch(err) {
+      console.error(err);
+      d4Status('PDF konnte nicht erstellt werden: '+(err?.message||err),'error');
+    } finally {
+      if(btn)btn.disabled=false; if(dlBtn)dlBtn.disabled=false;
+    }
   }
   window.generateD4ProtocolPdf=generateD4ProtocolPdf;
+
+  function d4DownloadLastPdf() {
+    if(d4LastPdf?.blob) {
+      d4DownloadBlob(d4LastPdf.blob,d4LastPdf.fileName);
+      d4Status('✓ PDF wurde heruntergeladen.','ok');
+      return;
+    }
+    d4Status('Bitte zuerst das PDF-Protokoll erstellen.','warn');
+  }
 
   function d4SetupExportUi() {
     const saveLoad=document.getElementById('save-load-section'); if(!saveLoad||document.getElementById('protocol-export-actions'))return;
     const wrap=document.createElement('div'); wrap.id='protocol-export-actions'; wrap.className='protocol-export-actions';
-    const btn=document.createElement('button'); btn.type='button'; btn.id='protocol-export-button'; btn.className='btn-blue'; btn.textContent='PDF-Protokoll erstellen'; btn.addEventListener('click',generateD4ProtocolPdf);
+    const buttons=document.createElement('div'); buttons.className='protocol-export-buttons';
+    const btn=document.createElement('button'); btn.type='button'; btn.id='protocol-export-button'; btn.className='btn-blue'; btn.textContent='PDF erstellen & teilen'; btn.addEventListener('click',generateD4ProtocolPdf);
+    const dlBtn=document.createElement('button'); dlBtn.type='button'; dlBtn.id='protocol-download-button'; dlBtn.title='PDF herunterladen'; dlBtn.setAttribute('aria-label','PDF herunterladen'); dlBtn.textContent='↓'; dlBtn.addEventListener('click',d4DownloadLastPdf);
     const status=document.createElement('div'); status.id='protocol-export-status'; status.className='protocol-export-status';
-    wrap.append(btn,status); const save=document.getElementById('save-button'); (save?save.insertAdjacentElement('afterend',wrap):saveLoad.appendChild(wrap));
+    buttons.append(btn,dlBtn); wrap.append(buttons,status);
+    const save=document.getElementById('save-button'); (save?save.insertAdjacentElement('afterend',wrap):saveLoad.appendChild(wrap));
     const update=()=>{const m=val('maschinentyp'); wrap.classList.toggle('visible',m==='P5 D4'||m==='P5 D4 - USA');}; update(); form.addEventListener('change',e=>{if(e.target?.name==='maschinentyp')update();});
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',d4SetupExportUi); else d4SetupExportUi();
