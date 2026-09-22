@@ -3602,7 +3602,27 @@ form.addEventListener('input', (event) => {
     const status=document.createElement('div'); status.id='protocol-export-status'; status.className='protocol-export-status';
     buttons.append(btn,dlBtn); wrap.append(buttons,status);
     const save=document.getElementById('save-button'); (save?save.insertAdjacentElement('afterend',wrap):saveLoad.appendChild(wrap));
-    const update=()=>{const m=val('maschinentyp'); wrap.classList.toggle('visible',m==='P5 D4'||m==='P5 D4 - USA');}; update(); form.addEventListener('change',e=>{if(e.target?.name==='maschinentyp')update();});
+    const update=()=>{const m=val('maschinentyp'); wrap.classList.toggle('visible',m==='P5 D4'||m==='P5 D4 - USA');};
+    update();
+    ['input','change'].forEach(evt=>form.addEventListener(evt,e=>{if(e.target?.name==='maschinentyp')update();}));
+    // Gespeicherte Datensätze und Reset ändern Select-Werte teilweise programmgesteuert.
+    // Daher Sichtbarkeit des PDF-Bereichs nach diesen Aktionen ebenfalls synchronisieren.
+    if (typeof window.loadEntryByKey === 'function') {
+      const originalLoadEntryByKey = window.loadEntryByKey;
+      window.loadEntryByKey = function(...args) {
+        const result = originalLoadEntryByKey.apply(this,args);
+        setTimeout(update,0);
+        return result;
+      };
+    }
+    if (typeof window.resetForm === 'function') {
+      const originalResetFormForPdf = window.resetForm;
+      window.resetForm = function(...args) {
+        const result = originalResetFormForPdf.apply(this,args);
+        setTimeout(update,0);
+        return result;
+      };
+    }
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',d4SetupExportUi); else d4SetupExportUi();
 })();
