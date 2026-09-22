@@ -3547,27 +3547,25 @@ form.addEventListener('input', (event) => {
       const {blob,warnings}=await d4CreatePdfBlob();
       const fileName=d4PdfFilename();
       d4LastPdf={blob,fileName,warnings};
-      const file=new File([blob],fileName,{type:'application/pdf'});
-      const shareData={
-        files:[file],
-        title:'Abnahmeprotokoll '+(val('seriennummer')||''),
-        text:'Abnahmeprotokoll '+(val('seriennummer')||'')
-      };
+      const file=new File([blob],fileName,{type:'application/pdf',lastModified:Date.now()});
+      // Für Outlook möglichst nur die Datei teilen. Zusätzliche title/text-Daten
+      // werden von einigen Outlook-/System-Share-Zielen fehlerhaft verarbeitet.
+      const shareData={files:[file]};
       const canShareFiles=typeof navigator.share==='function' &&
         (typeof navigator.canShare!=='function' || navigator.canShare(shareData));
 
       if(canShareFiles) {
         try {
           await navigator.share(shareData);
-          if(warnings.length) d4Status('✓ PDF erstellt und zum Teilen übergeben. Hinweis: '+warnings.join(' '),'warn');
-          else d4Status('✓ PDF erstellt und zum Teilen übergeben.','ok');
+          if(warnings.length) d4Status('✓ PDF als Datei zum Teilen übergeben. Empfänger in Outlook manuell wählen. Hinweis: '+warnings.join(' '),'warn');
+          else d4Status('✓ PDF als Datei zum Teilen übergeben. Empfänger in Outlook manuell wählen.','ok');
         } catch(shareErr) {
           if(shareErr?.name==='AbortError') {
-            d4Status('Teilen abgebrochen. Mit dem Download-Button kannst du die PDF trotzdem speichern.','warn');
+            d4Status('Teilen abgebrochen. Mit dem Download-Button kannst du die PDF speichern und in Outlook manuell anhängen.','warn');
           } else {
             console.warn('Datei-Teilen nicht möglich, PDF wird heruntergeladen.',shareErr);
             d4DownloadBlob(blob,fileName);
-            d4Status('Datei-Teilen war nicht möglich. Die PDF wurde stattdessen heruntergeladen.','warn');
+            d4Status('Datei-Teilen war nicht möglich. Die PDF wurde stattdessen heruntergeladen. In Outlook bitte manuell als Anhang auswählen.','warn');
           }
         }
       } else {
