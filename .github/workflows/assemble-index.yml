@@ -1,0 +1,29 @@
+name: Assemble staged index.html
+on:
+  push:
+    branches:
+      - sync-index-20260924
+
+permissions:
+  contents: write
+
+jobs:
+  assemble:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Assemble index.html
+        shell: bash
+        run: |
+          set -e
+          cat $(find .index_parts -maxdepth 1 -type f -name 'part-*' | sort) > index.html
+          rm -rf .index_parts
+          rm -f .github/workflows/assemble-index.yml
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Assemble index.html"
+          git push
